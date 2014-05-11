@@ -9,9 +9,10 @@
 #ifndef testSort_data_h
 #define testSort_data_h
 
-#define MAXPRIMARY 10
+#define MAXPRIMARY 11
 
 extern int primaryData[MAXPRIMARY];// = {22,3,6,9,7,2,13,42,64,31};
+extern int primaryAseData[MAXPRIMARY];
 
 struct singleList
 {

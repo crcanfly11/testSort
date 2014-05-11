@@ -11,8 +11,10 @@
 #include "data.h"
 
 int primaryData[MAXPRIMARY] = {22,3,6,9,7,2,13,42,64,31};
+int primaryAseData[MAXPRIMARY] = {2,3,6,7,12,13,42,64,131,232,333};
 
 void insertSort(int data[],int cnt,enum sortType type);
+int dichotomyMethod(int data[],int n,int value);
 
 class CSortList;
 
@@ -33,29 +35,32 @@ int main(int argc, const char * argv[])
 //        }
         
         //单链表 插入排序
-        CSortList list;
-    
-        for (int i=0; i<MAXPRIMARY; ++i) {
-            singleList *noteList = new singleList;
-            noteList->value = primaryData[i];
-            noteList->list = NULL;
+//        CSortList list;
+//    
+//        for (int i=0; i<MAXPRIMARY; ++i) {
+//            singleList *noteList = new singleList;
+//            noteList->value = primaryData[i];
+//            noteList->list = NULL;
+//        
+//            NSLog(@"addnote value:%d",noteList->value);
+//            list.addList(noteList,4,DESC);
+//        }
+//        
+//        NSLog(@"list count:%d",list.getCount());
+//        
+//        int cnt = 1;
+//        singleList *outnote = list.getFirstNote();
+//        while (outnote->list) {
+//            NSLog(@"list%d value:%d",cnt++,outnote->value);
+//            outnote = outnote->list;
+//            
+//            if (!outnote->list) {
+//                NSLog(@"list%d value:%d",cnt++,outnote->value);
+//            }
+//        }
         
-            NSLog(@"addnote value:%d",noteList->value);
-            list.addList(noteList,4,DESC);
-        }
-        
-        NSLog(@"list count:%d",list.getCount());
-        
-        int cnt = 1;
-        singleList *outnote = list.getFirstNote();
-        while (outnote->list) {
-            NSLog(@"list%d value:%d",cnt++,outnote->value);
-            outnote = outnote->list;
-            
-            if (!outnote->list) {
-                NSLog(@"list%d value:%d",cnt++,outnote->value);
-            }
-        }
+        //二分法
+        NSLog(@"the index of array is %d",dichotomyMethod(primaryAseData,MAXPRIMARY,2));
     }
     return 0;
 }
@@ -74,6 +79,25 @@ void insertSort(int data[],int cnt,enum sortType type)
     }
 }
 
+int dichotomyMethod(int data[],int n,int value)
+{
+    int left = 0,right = n-1,middle = right>>1;
+    
+    while (left < right) {
+        if (value > data[middle]) {
+            left = middle +1;
+        }
+        else if (value < data[middle]) {
+            right = middle - 1;
+        }
+        else
+            return middle;
+        
+        middle = (left + right)>>1;
+    }
+    
+    return middle;
+}
 
 
 
