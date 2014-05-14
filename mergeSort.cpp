@@ -1,12 +1,10 @@
 #include <iostream>
 #include <string>
-#include <algorithm>
 #include <time.h>
 
 using namespace std;
 
-int sort_num = 10000000;
-int memory_size = 250000;
+int memory_size = 25;  //250000
 //每次只对250k 个小数据量进行排序
 
 int read_data(FILE *fp, int *space)
@@ -26,15 +24,6 @@ void write_data(FILE *fp, int *space, int num)
 	}
 }
 
-// check the file pointer whether valid or not.
-void check_fp(FILE *fp)
-{
-	if (fp == NULL) {
-		cout << "The file pointer is invalid!" << endl;
-		exit(1);
-	}
-}
-
 int compare(const void *first_num, const void *second_num)
 {
 	return *(int *)first_num - *(int *)second_num;
@@ -51,7 +40,6 @@ int memory_sort()
 {
 	// open the target file.
 	FILE *fp_in_file = fopen("data.txt", "r");
-	check_fp(fp_in_file);
 	int counter = 0;
 
 	while (true)
@@ -68,7 +56,6 @@ int memory_sort()
 		// create a new auxiliary file name.
 		string file_name = new_file_name(++counter);
 		FILE *fp_aux_file = fopen(file_name.c_str(), "w");
-		check_fp(fp_aux_file);
 		// write the orderly numbers into auxiliary file.
 		write_data(fp_aux_file, space, num);
 		fclose(fp_aux_file);
@@ -87,17 +74,17 @@ void merge_sort(int file_num)
 
 	// create a new file to store result.
 	FILE *fp_out_file = fopen("result.txt", "w");
-	check_fp(fp_out_file);
+	
 	// allocate a array to store the file pointer.
 	FILE **fp_array = new FILE *[file_num];
 	int i;
 	for (i = 0; i < file_num; i++) {
 		string file_name = new_file_name(i + 1);
 		fp_array[i] = fopen(file_name.c_str(), "r");
-		check_fp(fp_array[i]);
 	}
+
+	int min_data,min_data_file;
 	int *first_data = new int[file_num];
-	//new 出个大小为0.1 亿/250k 数组，由指针first_data 指示数组首地址
 	bool *finish = new bool[file_num];
 	memset(finish, false, sizeof(bool) * file_num);
 	// read the first number of every auxiliary file.
@@ -111,24 +98,20 @@ void merge_sort(int file_num)
 		// the finish condition of the merge sort.
 		if (index >= file_num)
 			break;
-		//主要的修改在上面两行代码，就是merge sort 结束条件。
-		//要保证所有文件都读完，必须使得finish[0]...finish[40]都为真
-		//July、yansha，555，2011.05.29。
-		int min_data = first_data[index];
-		// choose the relative minimum in the array of first_data.
-		for (i = index + 1; i < file_num; i++) {
-			if (min_data > first_data[i] && !finish[i])
-			//一旦发现比min_data 更小的数据first_data[i]
-			{
-			min_data = first_data[i];
-			//则置min_data<-first_data[i]index = i;
-			//把下标i 赋给index。
+
+		min_data = first_data[index];
+		min_data_file = index;
+		for(i=0;i<file_num;++i) {
+			if(min_data > first_data[i] && !finish[i]) {
+				min_data = first_data[i];
+				min_data_file = i;
 			}
 		}
+
 		// write the orderly result to file.
 		fprintf(fp_out_file, "%d ", min_data);
-		if (fscanf(fp_array[index], "%d ", &first_data[index]) == EOF)
-			finish[index] = true;
+		if (fscanf(fp_array[min_data_file], "%d ", &first_data[min_data_file]) == EOF) 
+			finish[min_data_file] = true;
 	}
 	fclose(fp_out_file);
 	delete []finish;
@@ -138,6 +121,7 @@ void merge_sort(int file_num)
 		fclose(fp_array[i]);
 	delete [] fp_array;
 }
+
 
 int main()
 {
@@ -151,12 +135,13 @@ int main()
 	clock_t end_merge_sort = clock();
 	cout << "The time needs in merge sort: " << end_merge_sort - start_merge_sort << endl;
 	
+	//creat data 
 	//FILE *f = fopen("data.txt","w");
 	//if(!f) 
 	//	cout<<"cant open the file."<<endl;
 
-	//for(int i=0;i<250000*2;++i) {   //250000   //1024*2 每次写入 单字符 文件的大小是 2KB
-	//	fprintf(f,"%d ",rand()%2000);  //2164KB
+	//for(int i=0;i<memory_size*5;++i) {   //250000   //1024*2 每次写入 单字符 文件的大小是 2KB
+	//	fprintf(f,"%d ",rand()%100);  //2164KB
 	//}
 
 	//fclose(f);
